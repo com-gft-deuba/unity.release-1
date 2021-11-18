@@ -1,8 +1,10 @@
+SHELL := /bin/bash
+
 CUSTOMER ?= com.gft.deuba
 PROJECT ?= com.gft.deuba.unity.release-1
-
 TIMESTAMP ?= $(shell date +%Y%m%d%H%M%S)
-GITHASH := $(shell ( echo "$(GITHASH)" | sed 's/  */\n/g' ; git rev-parse HEAD  ) | sort -u )
+GITHASH ?= $(shell ( git rev-parse HEAD  ) )
+_GITHASH := $(shell ( echo "$(GITHASH)" | sed 's/^ *//; s/  *$$//; s/  */\\|/g') )
 
 DIST_DIR ?= ../../../bin
 
@@ -52,15 +54,6 @@ dep:
 		make -C  $$dir dep ; \
 	done
 
-docker-clean:
-	@for dir in $(BINS_SUBDIRS) ; do \
-	    TIMESTAMP="$(TIMESTAMP)" \
-	    GITHASH="$(GITHASH)" \
-	    CUSTOMER="$(CUSTOMER)" \
-	    PROJECT="$(PROJECT)" \
-	    DIST_DIR="$(DIST_DIR)" \
-		make -C  $$dir docker-clean; \
-	done
 docker:
 	@for dir in $(BINS_SUBDIRS) ; do \
 	    TIMESTAMP="$(TIMESTAMP)" \
@@ -91,6 +84,46 @@ distclean:
 		make -C  $$dir distclean ; \
 	done
 
+docker-clean:
+	@for dir in $(BINS_SUBDIRS) ; do \
+	    TIMESTAMP="$(TIMESTAMP)" \
+	    GITHASH="$(GITHASH)" \
+	    CUSTOMER="$(CUSTOMER)" \
+	    PROJECT="$(PROJECT)" \
+	    DIST_DIR="$(DIST_DIR)" \
+		make -C  $$dir docker-clean; \
+	done
+
+docker-distclean:
+	@for dir in $(BINS_SUBDIRS) ; do \
+	    TIMESTAMP="$(TIMESTAMP)" \
+	    GITHASH="$(GITHASH)" \
+	    CUSTOMER="$(CUSTOMER)" \
+	    PROJECT="$(PROJECT)" \
+	    DIST_DIR="$(DIST_DIR)" \
+		make -C  $$dir docker-distclean; \
+	done
+
+ls:
+	@for dir in $(BINS_SUBDIRS) ; do \
+	    TIMESTAMP="$(TIMESTAMP)" \
+	    GITHASH="$(GITHASH)" \
+	    CUSTOMER="$(CUSTOMER)" \
+	    PROJECT="$(PROJECT)" \
+	    DIST_DIR="$(DIST_DIR)" \
+  		  make -C $$dir ls; \
+	done
+
+docker-ls:
+	@for dir in $(BINS_SUBDIRS) ; do \
+	    TIMESTAMP="$(TIMESTAMP)" \
+	    GITHASH="$(GITHASH)" \
+	    CUSTOMER="$(CUSTOMER)" \
+	    PROJECT="$(PROJECT)" \
+	    DIST_DIR="$(DIST_DIR)" \
+  		  make -C $$dir docker-ls; \
+	done
+
 test:
 	@for dir in $(BINS_SUBDIRS) ; do \
 	    TIMESTAMP="$(TIMESTAMP)" \
@@ -99,4 +132,14 @@ test:
 	    PROJECT="$(PROJECT)" \
 	    DIST_DIR="$(DIST_DIR)" \
   		  make -C $$dir test; \
+	done
+
+docker-test:
+	@for dir in $(BINS_SUBDIRS) ; do \
+	    TIMESTAMP="$(TIMESTAMP)" \
+	    GITHASH="$(GITHASH)" \
+	    CUSTOMER="$(CUSTOMER)" \
+	    PROJECT="$(PROJECT)" \
+	    DIST_DIR="$(DIST_DIR)" \
+  		  make -C $$dir docker-test; \
 	done
