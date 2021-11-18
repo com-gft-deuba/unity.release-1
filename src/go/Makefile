@@ -1,8 +1,13 @@
+CUSTOMER ?= com.gft.deuba
+PROJECT ?= com.gft.deuba.unity.release-1
+
 TIMESTAMP ?= $(shell date +%Y%m%d%H%M%S)
 GITHASH := $(shell ( echo "$(GITHASH)" | sed 's/  */\n/g' ; git rev-parse HEAD  ) | sort -u )
 
+DIST_DIR ?= ../../../bin
+
 LIBS := 
-BINS := ms-random ms-thermometer fe-weather
+BINS := ms-random ms-measure fe-measure
 
 LIBS_SUBDIRS := $(addprefix ./lib,$(LIBS))
 BINS_SUBDIRS := $(addprefix ./,$(BINS))
@@ -21,20 +26,48 @@ bin:
 	@for dir in $(BINS_SUBDIRS) ; do \
 	    TIMESTAMP="$(TIMESTAMP)" \
 	    GITHASH="$(GITHASH)" \
-		make -C  $$dir bin ; \
+	    CUSTOMER="$(CUSTOMER)" \
+	    PROJECT="$(PROJECT)" \
+	    DIST_DIR="$(DIST_DIR)" \
+	    make -C $$dir bin ; \
+	done
+
+dist:
+	@for dir in $(BINS_SUBDIRS) ; do \
+	    TIMESTAMP="$(TIMESTAMP)" \
+	    GITHASH="$(GITHASH)" \
+	    CUSTOMER="$(CUSTOMER)" \
+	    PROJECT="$(PROJECT)" \
+	    DIST_DIR="$(DIST_DIR)" \
+		make -C  $$dir dist ; \
 	done
 
 dep:
 	@for dir in $(BINS_SUBDIRS) ; do \
 	    TIMESTAMP="$(TIMESTAMP)" \
 	    GITHASH="$(GITHASH)" \
+	    CUSTOMER="$(CUSTOMER)" \
+	    PROJECT="$(PROJECT)" \
+	    DIST_DIR="$(DIST_DIR)" \
 		make -C  $$dir dep ; \
 	done
 
+docker-clean:
+	@for dir in $(BINS_SUBDIRS) ; do \
+	    TIMESTAMP="$(TIMESTAMP)" \
+	    GITHASH="$(GITHASH)" \
+	    CUSTOMER="$(CUSTOMER)" \
+	    PROJECT="$(PROJECT)" \
+	    DIST_DIR="$(DIST_DIR)" \
+		make -C  $$dir docker-clean; \
+	done
 docker:
 	@for dir in $(BINS_SUBDIRS) ; do \
 	    TIMESTAMP="$(TIMESTAMP)" \
 	    GITHASH="$(GITHASH)" \
+	    CUSTOMER="$(CUSTOMER)" \
+	    PROJECT="$(PROJECT)" \
+	    DIST_DIR="$(DIST_DIR)" \
 		make -C  $$dir docker; \
 	done
 
@@ -42,6 +75,9 @@ clean:
 	@for dir in $(SUBDIRS) ; do \
 	    TIMESTAMP="$(TIMESTAMP)" \
 	    GITHASH="$(GITHASH)" \
+	    CUSTOMER="$(CUSTOMER)" \
+	    PROJECT="$(PROJECT)" \
+	    DIST_DIR="$(DIST_DIR)" \
 		make -C  $$dir clean ; \
 	done
 
@@ -49,13 +85,18 @@ distclean:
 	@for dir in $(SUBDIRS) ; do \
 	    TIMESTAMP="$(TIMESTAMP)" \
 	    GITHASH="$(GITHASH)" \
+	    CUSTOMER="$(CUSTOMER)" \
+	    PROJECT="$(PROJECT)" \
+	    DIST_DIR="$(DIST_DIR)" \
 		make -C  $$dir distclean ; \
 	done
 
 test:
-	@echo "GITHASH: $(GITHASH)"
 	@for dir in $(BINS_SUBDIRS) ; do \
 	    TIMESTAMP="$(TIMESTAMP)" \
 	    GITHASH="$(GITHASH)" \
+	    CUSTOMER="$(CUSTOMER)" \
+	    PROJECT="$(PROJECT)" \
+	    DIST_DIR="$(DIST_DIR)" \
   		  make -C $$dir test; \
 	done
