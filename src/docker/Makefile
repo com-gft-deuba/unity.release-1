@@ -10,6 +10,8 @@ _GITHASH := $(shell ( echo "$(GITHASH)" | sed 's/^ *//; s/  *$$//; s/  */\\|/g')
 GO_COMPONENTS :=  ms-measure ms-random fe-measure
 ANGULAR_COMPONENTS := fe-weatherstation
 
+DOCKER_REMOTE ?= europe-west3-docker.pkg.dev/ger-dbagntademo-sdb-001/project
+
 all: docker
 
 .PHONY: docker docker-clean clean docker-distclean distclean $(GO_COMPONENTS) $(ANGULAR_COMPONENTS) docker-ls ls docker-test test 
@@ -21,11 +23,13 @@ docker:
 	    GITHASH="$(GITHASH)" \
 	    CUSTOMER="$(CUSTOMER)" \
 	    PROJECT="$(PROJECT)" \
+	    DOCKER_REMOTE="$(DOCKER_REMOTE)" \
 		make -C  ../go/$$dir docker ; \
 	    TIMESTAMP="$(TIMESTAMP)" \
 	    GITHASH="$(GITHASH)" \
 	    CUSTOMER="$(CUSTOMER)" \
 	    PROJECT="$(PROJECT)" \
+	    DOCKER_REMOTE="$(DOCKER_REMOTE)" \
 		make -C  $$dir all ; \
 	done
 	@for dir in $(ANGULAR_COMPONENTS) ; do \
@@ -33,6 +37,7 @@ docker:
 	    GITHASH="$(GITHASH)" \
 	    CUSTOMER="$(CUSTOMER)" \
 	    PROJECT="$(PROJECT)" \
+	    DOCKER_REMOTE="$(DOCKER_REMOTE)" \
 		make -C  $$dir all ; \
 	done
 
@@ -42,11 +47,13 @@ docker-clean clean:
 	    GITHASH="$(GITHASH)" \
 	    CUSTOMER="$(CUSTOMER)" \
 	    PROJECT="$(PROJECT)" \
+	    DOCKER_REMOTE="$(DOCKER_REMOTE)" \
 		make -C  ../go/$$dir docker-clean ; \
 	    TIMESTAMP="$(TIMESTAMP)" \
 	    GITHASH="$(GITHASH)" \
 	    CUSTOMER="$(CUSTOMER)" \
 	    PROJECT="$(PROJECT)" \
+	    DOCKER_REMOTE="$(DOCKER_REMOTE)" \
 		make -C  $$dir clean ; \
 	done
 	@for dir in $(ANGULAR_COMPONENTS) ; do \
@@ -54,6 +61,7 @@ docker-clean clean:
 	    GITHASH="$(GITHASH)" \
 	    CUSTOMER="$(CUSTOMER)" \
 	    PROJECT="$(PROJECT)" \
+	    DOCKER_REMOTE="$(DOCKER_REMOTE)" \
 		make -C  $$dir clean ; \
 	done
 
@@ -63,11 +71,13 @@ docker-distclean distclean:
 	    GITHASH="$(GITHASH)" \
 	    CUSTOMER="$(CUSTOMER)" \
 	    PROJECT="$(PROJECT)" \
+	    DOCKER_REMOTE="$(DOCKER_REMOTE)" \
 		make -C ../go/$$dir docker-distclean ; \
 	    TIMESTAMP="$(TIMESTAMP)" \
 	    GITHASH="$(GITHASH)" \
 	    CUSTOMER="$(CUSTOMER)" \
 	    PROJECT="$(PROJECT)" \
+	    DOCKER_REMOTE="$(DOCKER_REMOTE)" \
 		make -C $$dir distclean ; \
 	done
 	@for dir in $(ANGULAR_COMPONENTS) ; do \
@@ -75,6 +85,7 @@ docker-distclean distclean:
 	    GITHASH="$(GITHASH)" \
 	    CUSTOMER="$(CUSTOMER)" \
 	    PROJECT="$(PROJECT)" \
+	    DOCKER_REMOTE="$(DOCKER_REMOTE)" \
 		make -C  $$dir distclean; \
 	done
 	@for image in $$( docker image ls --filter "label=PROJECT=$(PROJECT)" --format "{{.ID}}" ) ; do \
@@ -84,12 +95,34 @@ docker-distclean distclean:
 		docker image rm -f $$image ; \
 	done
 
+push: docker-push
+
+docker-push:
+	@pwd
+	@for dir in $(GO_COMPONENTS) ; do \
+	    TIMESTAMP="$(TIMESTAMP)" \
+	    GITHASH="$(GITHASH)" \
+	    CUSTOMER="$(CUSTOMER)" \
+	    PROJECT="$(PROJECT)" \
+	    DOCKER_REMOTE="$(DOCKER_REMOTE)" \
+		make -C  $$dir docker-push ; \
+	done
+	@for dir in $(ANGULAR_COMPONENTS) ; do \
+	    TIMESTAMP="$(TIMESTAMP)" \
+	    GITHASH="$(GITHASH)" \
+	    CUSTOMER="$(CUSTOMER)" \
+	    PROJECT="$(PROJECT)" \
+	    DOCKER_REMOTE="$(DOCKER_REMOTE)" \
+		make -C  $$dir docker-push ; \
+	done
+
 docker-ls ls:
 	@for dir in $(GO_COMPONENTS) ; do \
 	    TIMESTAMP="$(TIMESTAMP)" \
 	    GITHASH="$(GITHASH)" \
 	    CUSTOMER="$(CUSTOMER)" \
 	    PROJECT="$(PROJECT)" \
+	    DOCKER_REMOTE="$(DOCKER_REMOTE)" \
 		make -C  $$dir ls ; \
 	done
 	@for dir in $(ANGULAR_COMPONENTS) ; do \
@@ -97,6 +130,7 @@ docker-ls ls:
 	    GITHASH="$(GITHASH)" \
 	    CUSTOMER="$(CUSTOMER)" \
 	    PROJECT="$(PROJECT)" \
+	    DOCKER_REMOTE="$(DOCKER_REMOTE)" \
 		make -C  $$dir ls ; \
 	done
 
@@ -107,6 +141,7 @@ docker-test test:
 	    GITHASH="$(GITHASH)" \
 	    CUSTOMER="$(CUSTOMER)" \
 	    PROJECT="$(PROJECT)" \
+	    DOCKER_REMOTE="$(DOCKER_REMOTE)" \
 		make -C ../go/$$dir docker-test; \
 	    TIMESTAMP="$(TIMESTAMP)" \
 	    GITHASH="$(GITHASH)" \
@@ -119,5 +154,6 @@ docker-test test:
 	    GITHASH="$(GITHASH)" \
 	    CUSTOMER="$(CUSTOMER)" \
 	    PROJECT="$(PROJECT)" \
+	    DOCKER_REMOTE="$(DOCKER_REMOTE)" \
 		make -C  $$dir ; \
 	done

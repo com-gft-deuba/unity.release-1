@@ -20,11 +20,12 @@ BUILD_DIR ?= ./build/
 DOCKER_DIR   ?= $(BUILD_DIR)/docker
 DOCKER_VARIANT ?= alpine
 DOCKER_IMAGES:= kubernetes-api-http kubernetes-api-https gcp kubernetes-nodeport kubernetes-istio docker-compose development
+DOCKER_REMOTE ?= europe-west3-docker.pkg.dev/ger-dbagntademo-sdb-001/project
 
 SRCS := $(shell (find ../../angular/$(COMPONENT)  -type f -not -path '*/node_modules/*' ) )
 all: docker
 
-.PHONY: docker-clean clean docker-distclean distclean docker docker-ls ls docker-test test
+.PHONY: docker-clean clean docker-distclean distclean docker docker-ls ls docker-test test push docker-push
 
 docker: $(DOCKER_DIR)/$(TARGET)-gcp.iid \
 	$(DOCKER_DIR)/$(TARGET)-kubernetes-api.iid \
@@ -34,6 +35,12 @@ docker: $(DOCKER_DIR)/$(TARGET)-gcp.iid \
 	$(DOCKER_DIR)/$(TARGET)-kubernetes-istio.iid \
 	$(DOCKER_DIR)/$(TARGET)-docker-compose.iid \
 	$(DOCKER_DIR)/$(TARGET)-development.iid 
+
+docker-push: push
+
+push: $(DOCKER_DIR)/$(TARGET)-gcp.iid
+	@docker image tag "$(TARGET):gcp" "$(DOCKER_REMOTE)/$(TARGET):gcp"
+	@docker image push "$(DOCKER_REMOTE)/$(TARGET):gcp"
 
 gcp:                  $(DOCKER_DIR)/$(TARGET)-gcp.iid
 kubernetes-api:       $(DOCKER_DIR)/$(TARGET)-kubernetes-api.iid

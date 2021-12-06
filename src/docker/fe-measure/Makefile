@@ -20,16 +20,29 @@ BUILD_DIR ?= ./build/
 DOCKER_DIR   ?= $(BUILD_DIR)/docker
 DOCKER_VARIANT ?= alpine
 DOCKER_IMAGES:= with-content v1 v2 v3
+DOCKER_REMOTE ?= europe-west3-docker.pkg.dev/ger-dbagntademo-sdb-001/project
 
 all: docker
 
-.PHONY: docker-clean clean docker-distclean distclean docker docker-ls ls docker-test test
+.PHONY: docker-clean clean docker-distclean distclean docker docker-ls ls docker-test test push docker-push
 
 docker: ../../go/$(COMPONENT)/$(DOCKER_DIR)/$(TARGET)-$(DOCKER_VARIANT).iid \
 	$(DOCKER_DIR)/$(TARGET)-with-content.iid \
 	$(DOCKER_DIR)/$(TARGET)-v1.iid \
 	$(DOCKER_DIR)/$(TARGET)-v2.iid \
 	$(DOCKER_DIR)/$(TARGET)-v3.iid
+
+docker-push: push
+
+push:   $(DOCKER_DIR)/$(TARGET)-v1.iid \
+	$(DOCKER_DIR)/$(TARGET)-v2.iid \
+	$(DOCKER_DIR)/$(TARGET)-v3.iid
+	@docker image tag "$(TARGET):v1" "$(DOCKER_REMOTE)/$(TARGET):v1"
+	@docker image tag "$(TARGET):v2" "$(DOCKER_REMOTE)/$(TARGET):v2"
+	@docker image tag "$(TARGET):v3" "$(DOCKER_REMOTE)/$(TARGET):v3"
+	@docker image push "$(DOCKER_REMOTE)/$(TARGET):v1"
+	@docker image push "$(DOCKER_REMOTE)/$(TARGET):v2"
+	@docker image push "$(DOCKER_REMOTE)/$(TARGET):v3"
 
 ../../go/$(COMPONENT)/$(DOCKER_DIR)/$(TARGET)-$(DOCKER_VARIANT).iid:
 	@TIMESTAMP="$(TIMESTAMP)" \
