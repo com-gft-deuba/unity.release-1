@@ -13,9 +13,18 @@ metadata:
 spec:
   containers:
     - name: frontend
-      image: com.gft.deuba.unity.release-1.frontend.fe-weatherstation:kubernetes-istio
+      image: com.gft.deuba.unity.release-1.frontend.fe-weatherstation:v1
       imagePullPolicy: Never
       resources:
         limits:
           memory: "128Mi"
           cpu: "500m"
+      volumeMounts:
+      - name: config
+        mountPath: "/usr/share/nginx/html/assets/config.json"
+        readOnly: true
+        subPath: api.Url
+  volumes:
+    - name: config
+      configMap:
+        name: frontend-api-config

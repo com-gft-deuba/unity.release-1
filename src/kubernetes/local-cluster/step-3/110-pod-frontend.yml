@@ -19,3 +19,12 @@ spec:
         limits:
           memory: "128Mi"
           cpu: "500m"
+      volumeMounts:
+      - name: config
+        mountPath: "/usr/share/nginx/html/assets/config.json"
+        readOnly: true
+        subPath: api.Url
+  volumes:
+    - name: config
+      configMap:
+        name: frontend-api-config
