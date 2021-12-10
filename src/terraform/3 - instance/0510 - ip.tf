@@ -1,14 +1,14 @@
-resource "google_compute_address" "instance" {
-  provider                 = google-beta
+# resource "google_compute_address" "instance" {
+#   provider                 = google-beta
 
-  name    = local.instance_signature_clean
-  address_type = "EXTERNAL"
-  # purpose = "GCE_ENDPOINT"
-  network_tier = "STANDARD"
-  prefix_length = 0
+#   name    = local.instance_signature_clean
+#   address_type = "EXTERNAL"
+#   # purpose = "GCE_ENDPOINT"
+#   network_tier = "STANDARD"
+#   prefix_length = 0
 
-  labels = local.instance_tags
-}
+#   labels = local.instance_tags
+# }
 
 # resource "google_compute_router" "instance" {
 #   name    = local.instance_signature_clean

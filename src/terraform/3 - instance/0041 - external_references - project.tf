@@ -22,3 +22,7 @@ data "google_storage_bucket" "project" {
 #   account_id   = local.project_signature_clean
 # }
 # 
+
+data "google_service_account" "project" {
+   account_id   = local.project_signature_clean_28
+}

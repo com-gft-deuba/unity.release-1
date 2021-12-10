@@ -1,25 +1,23 @@
-resource "google_service_account" "instance" {
-  account_id   = local.instance_signature_clean_28
-  display_name = "Service Account"
-}
-
-
 resource "google_container_node_pool" "instance" {
   name       = local.instance_signature_clean
-  location   = lower(data.google_storage_bucket.project.location)
+  location   = format("%s-a", lower(data.google_storage_bucket.project.location))
   cluster    = google_container_cluster.instance.name
   node_count = 1
 
   node_config {
     preemptible  = true
-    machine_type = "e2-medium"
-
+#    machine_type = "e2-medium"
+    machine_type = "e2-standard-4"
+    tags = []
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
-    service_account = google_service_account.instance.email
+    service_account = data.google_service_account.project.email
     oauth_scopes    = [
-      "https://www.googleapis.com/auth/cloud-platform"
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring"
     ]
   }
+
 }
 
 
@@ -27,7 +25,7 @@ resource "google_container_cluster" "instance" {
   provider                 = google-beta
 
   name                     = local.instance_signature_clean
-  location                 = lower(data.google_storage_bucket.project.location)
+  location                 = format("%s-a", lower(data.google_storage_bucket.project.location))
 
   network                  = google_compute_network.instance.name
   subnetwork               = google_compute_subnetwork.instance.id
@@ -44,6 +42,14 @@ resource "google_container_cluster" "instance" {
     master_ipv4_cidr_block  = "172.23.0.0/28"
   }
 
+  master_auth {
+    # username = ""
+    # password = ""
+
+    client_certificate_config {
+      issue_client_certificate = false
+    }
+  }
   master_authorized_networks_config {
     dynamic "cidr_blocks" {
         for_each = local.authorized_source_ranges

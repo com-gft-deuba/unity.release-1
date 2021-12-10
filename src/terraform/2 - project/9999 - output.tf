@@ -4,3 +4,10 @@ output "project_repository_project_url" {
 
 
 
+output "project_service_account" {
+  value = google_service_account.project
+}
+
+output "project_service_account_binding" {
+  value = google_artifact_registry_repository_iam_binding.project_sa_binding
+}
