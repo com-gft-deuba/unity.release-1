@@ -8,4 +8,4 @@ metadata:
     app: frontend
 data:
   api.Url: |
-    { "url": "http://127.0.0.1/thermometer/" }
+    { "url": "http://api.localgft.com/thermometer/" }
