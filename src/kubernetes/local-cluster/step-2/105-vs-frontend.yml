@@ -72,15 +72,15 @@ spec:
 
     - name: frontend-prod
 
-      headers:
+#     headers:
 
-        request:
-          set:
-            x-environment: prod
+#       request:
+#         set:
+#           x-environment: prod
 
-        response:
-          set:
-            x-environment: prod
+#       response:
+#         set:
+#           x-environment: prod
 
       route:
         - destination:
