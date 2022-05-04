@@ -9,7 +9,7 @@ _GITHASH := $(shell ( echo "$(GITHASH)" | sed 's/^ *//; s/  *$$//; s/  */\\|/g')
 DIST_DIR ?= ../../../bin
 
 LIBS := 
-BINS := ms-random ms-measure fe-measure
+BINS := ms-random ms-measure 
 
 LIBS_SUBDIRS := $(addprefix ./lib,$(LIBS))
 BINS_SUBDIRS := $(addprefix ./,$(BINS))
