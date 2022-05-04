@@ -4,11 +4,11 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: thermometer-ingress-api
+  name: random-ingress-api
   namespace: com-gft-deuba-unity-release-1
   labels:
     PROJECT: com.gft.deuba.unity.release-1
-    app: thermometer
+    app: random
     version: "1.0.0"
 
 spec:
@@ -17,17 +17,17 @@ spec:
 
 # ----------------------------------------------------------------------------
 
-    - name: thermometer-prod
+    - name: random-prod
 
       match:
 
       - uri:
-          prefix: /thermometer/
+          prefix: /random/
 
       rewrite:
         uri: /
 
       route:
         - destination:
-            host: thermometer
+            host: random
 

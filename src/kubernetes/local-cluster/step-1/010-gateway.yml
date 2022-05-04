@@ -41,7 +41,10 @@ spec:
 
   hosts:
 
-    - "*"
+    - api.localgft.com
+    - prod.localgft.com
+    - pilot.localgft.com
+    - dev.localgft.com
 
   gateways:
 
@@ -64,6 +67,20 @@ spec:
       route:
         - destination:
             host: thermometer
+
+    - name: random
+
+      match:
+
+      - uri:
+          prefix: /random/
+
+      rewrite:
+        uri: /
+
+      route:
+        - destination:
+            host: random
 
     - name: frontend
 
