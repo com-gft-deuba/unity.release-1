@@ -1,6 +1,5 @@
-# kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.4.0/aio/deploy/recommended.yaml
-kubectl apply -f dashboard.yaml
-kubectl apply -f setup.yaml
-echo
-echo
-kubectl -n kubernetes-dashboard get secret $(kubectl -n kubernetes-dashboard get sa/admin-user -o jsonpath="{.secrets[0].name}") -o go-template="{{.data.token | base64decode}}"
+COMPONENT=kiali
+source ../../../../setup.sh
+export KUBERNETES_NAMESPACE="${KUBERNETES_BASE_NAMESPACE}"
+
+export PS1='\[\e]0;\[\033[00;34m\]$(nice_path "\w")\[\033[00m\] $(if [[ $? == 0 ]]; then echo -en "\[\033[00;32m\]✓\[\033[00m\]"; else echo -en "\[\033[00;31m\]✗\[\033[00m\]"; fi) \$ '

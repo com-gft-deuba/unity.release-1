@@ -1,14 +1,14 @@
 SHELL := /bin/bash
 
+ISTIO_VERSION ?= 1.13.3
+ISTIO_ARCH ?= linux-amd64
+
 CUSTOMER ?= com.gft.tsbo
 PROJECT ?= com.gft.tsbo.source
 MODULE ?= infrastructure
 COMPONENT ?= istio
 TARGET ?= $(PROJECT).$(MODULE).$(COMPONENT)
 KUBERNETES_NAMESPACE :=$(shell echo "$PROJECT" | sed 's/[^a-zA-Z0-9_-]/-/g' )
-
-ISTIO_VERSION := 1.13.3
-ISTIO_ARCH := linux-amd64
 
 TIMESTAMP ?= $(shell date +%Y%m%d%H%M%S)
 GITHASH ?= $(shell (  git rev-parse HEAD  ) )
@@ -32,12 +32,12 @@ all: istio
 istio: $(BUILD_DIR)/istio-$(ISTIO_VERSION)-$(ISTIO_ARCH)
 
 downloaded/istio-$(ISTIO_VERSION)-$(ISTIO_ARCH).tar.gz:
-	@echo "### ISTIO / DOWN  $(PROJECT).$(MODULE).$(COMPONENT)"
+	@echo "### KUB / ISTIO / DOWN 1 / $(PROJECT).$(MODULE).$(COMPONENT)"
 	@$(MKDIR) -p downloaded/
 	@$(WGET) -O "downloaded/istio-$(ISTIO_VERSION)-$(ISTIO_ARCH).tar.gz" "https://github.com/istio/istio/releases/download/$(ISTIO_VERSION)/istio-$(ISTIO_VERSION)-$(ISTIO_ARCH).tar.gz" 
 
 $(BUILD_DIR)/istio-$(ISTIO_VERSION)-$(ISTIO_ARCH): downloaded/istio-$(ISTIO_VERSION)-$(ISTIO_ARCH).tar.gz
-	@echo "### ISTIO / EXT   $(PROJECT).$(MODULE).$(COMPONENT)"
+	@echo "### KUB / ISTIO / DEPLOY / $(PROJECT).$(MODULE).$(COMPONENT)"
 	@$(MKDIR) "$(BUILD_DIR)"
 	@$(MKDIR) "$(BUILD_DIR)/tmp"
 	@$(CD) "$(BUILD_DIR)/tmp" && $(TAR) xzvf "../../downloaded/istio-$(ISTIO_VERSION)-$(ISTIO_ARCH).tar.gz" "istio-$(ISTIO_VERSION)/bin/istioctl"
@@ -56,7 +56,7 @@ dist:
 docker: 
 
 clean:
-	@echo "### KUB /CLEAN $(PROJECT).$(MODULE).$(COMPONENT) - $(DOCKER_VARIANT)"
+	@echo "### KUB / ISTIO / CLEAN  / $(PROJECT).$(MODULE).$(COMPONENT)"
 	@$(RM) -rf $(BUILD_DIR)
 	@$(MKDIR) $(BUILD_DIR)
 

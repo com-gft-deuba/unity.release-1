@@ -1,9 +1,12 @@
 SHELL := /bin/bash
 
+ISITO_VERSION ?= 1.13.3
+ISTIO_ARCH ?= linux-amd64
+
 CUSTOMER ?= com.gft.tsbo
 PROJECT ?= com.gft.tsbo.source
 MODULE ?= infrastructure
-COMPONENT ?= dashboard
+COMPONENT ?= kiali
 TARGET ?= $(PROJECT).$(MODULE).$(COMPONENT)
 KUBERNETES_NAMESPACE :=$(shell echo "$PROJECT" | sed 's/[^a-zA-Z0-9_-]/-/g' )
 
@@ -17,46 +20,41 @@ CP ?= cp -pv
 MKDIR ?= mkdir -p
 LN ?= ln
 RM ?= rm
+CURL ?= curl
+KUBECTL ?= kubectl
 
-all: kubernetes
+all: kiali
 
-.PHONY: clean kubernetes docker dist dep lib include distclean bin
+.PHONY: clean kubernetes docker dist dep lib include distclean bin kiali
 
 kubernetes: \
-	$(BUILD_DIR)/$(TARGET)-kubernetes-dashboard \
-	$(BUILD_DIR)/$(TARGET)-istio-dashboard
+	$(BUILD_DIR)/$(TARGET)-kiali
+
+kiali: \
+	$(BUILD_DIR)/$(TARGET)-kiali
 
 manifests/downloaded/kiali.yaml:
-	@mkdir -p manifests/downloaded/
-	@ curl 'https://raw.githubusercontent.com/istio/istio/release-1.12/samples/addons/kiali.yaml' > manifests/downloaded/kiali.yaml
+	@echo "### KUB / KIALI / DOWN 1 / $(PROJECT).$(MODULE).$(COMPONENT)"
+	@$(MKDIR) manifests/downloaded/
+	@$(CURL) 'https://raw.githubusercontent.com/istio/istio/release-$(ISTIO_VERSION)/samples/addons/kiali.yaml' > manifests/downloaded/kiali.yaml
 
 manifests/downloaded/prometheus.yaml:
-	@mkdir -p manifests/downloaded/
-	@curl 'https://raw.githubusercontent.com/istio/istio/release-1.12/samples/addons/prometheus.yaml' > manifests/downloaded/prometheus.yaml
+	@echo "### KUB / KIALI / DOWN 2 / $(PROJECT).$(MODULE).$(COMPONENT)"
+	@$(MKDIR) manifests/downloaded/
+	@$(CURL) 'https://raw.githubusercontent.com/istio/istio/release-$(ISTIO_VERSION)/samples/addons/prometheus.yaml' > manifests/downloaded/prometheus.yaml
 
 manifests/downloaded/jaeger.yaml:
-	@mkdir -p manifests/downloaded/
-	@curl 'https://raw.githubusercontent.com/istio/istio/release-1.12/samples/addons/jaeger.yaml' > manifests/downloaded/jaeger.yaml
+	@echo "### KUB / KIALI / DOWN 3 / $(PROJECT).$(MODULE).$(COMPONENT)"
+	@$(MKDIR) manifests/downloaded/
+	@$(CURL) 'https://raw.githubusercontent.com/istio/istio/release-$(ISTIO_VERSION)/samples/addons/jaeger.yaml' > manifests/downloaded/jaeger.yaml
 
-manifests/downloaded/kubernetes-dashboard.yaml:
-	@mkdir -p manifests/downloaded/
-	@curl https://raw.githubusercontent.com/kubernetes/dashboard/v2.4.0/aio/deploy/recommended.yaml > "$@"
-
-$(BUILD_DIR)/$(TARGET)-kubernetes-dashboard: manifests/downloaded/kubernetes-dashboard.yaml \
-	                                     manifests/kubernetes-dashboard-user.yaml
-	@echo "### KUB / DASH  $(PROJECT).$(MODULE).$(COMPONENT) - $(DOCKER_VARIANT)"
-	@$(MKDIR) "$(BUILD_DIR)"
-	@kubectl apply -f manifests/downloaded/kubernetes-dashboard.yaml
-	@kubectl apply -f manifests/kubernetes-dashboard-user.yaml
-	@kubectl -n kubernetes-dashboard get secret $$(kubectl -n kubernetes-dashboard get sa/admin-user -o jsonpath="{.secrets[0].name}") -o go-template="{{.data.token | base64decode}}" > kubernetes-token.txt
-
-
-$(BUILD_DIR)/$(TARGET)-istio-dashboard: manifests/downloaded/kiali.yaml \
-	                                manifests/downloaded/prometheus.yaml \
-	                                manifests/downloaded/jaeger.yaml
-	@kubectl apply -f manifests/downloaded/kiali.yaml
-	@kubectl apply -f manifests/downloaded/prometheus.yaml
-	@kubectl apply -f manifests/downloaded/jaeger.yaml
+$(BUILD_DIR)/$(TARGET)-kiali: manifests/downloaded/kiali.yaml \
+	                      manifests/downloaded/prometheus.yaml \
+	                      manifests/downloaded/jaeger.yaml
+	@echo "### KUB / KIALI / DEPLOY / $(PROJECT).$(MODULE).$(COMPONENT)"
+	@$(KUBECTL) apply -f manifests/downloaded/kiali.yaml
+	@$(KUBECTL) apply -f manifests/downloaded/prometheus.yaml
+	@$(KUBECTL) apply -f manifests/downloaded/jaeger.yaml
 ls:
 
 docker-ls:
@@ -66,9 +64,7 @@ dist:
 docker: 
 
 clean:
-	@echo "### KUB /CLEAN $(PROJECT).$(MODULE).$(COMPONENT) - $(DOCKER_VARIANT)"
-	@if [[ -f "manifests/kubernetes-dashboard-user.yaml" ]] ; then kubectl delete -f manifests/kubernetes-dashboard-user.yaml 2>/dev/null || exit 0; fi
-	@if [[ -f "manifests/downloaded/kubernetes-dashboard.yaml" ]] ; then kubectl delete -f manifests/downloaded/kubernetes-dashboard.yaml 2>/dev/null || exit 0; fi
+	@echo "### KUB / KIALI / CLEAN - $(PROJECT).$(MODULE).$(COMPONENT)"
 	@if [[ -f "manifests/downloaded/kiali.yaml" ]] ; then kubectl delete -f manifests/downloaded/kiali.yaml 2>/dev/null || exit 0; fi
 	@if [[ -f "manifests/downloaded/prometheus.yaml" ]] ; then kubectl delete -f manifests/downloaded/prometheus.yaml 2>/dev/null || exit 0; fi
 	@if [[ -f "manifests/downloaded/jaeger.yaml" ]] ; then kubectl delete -f manifests/downloaded/jaeger.yaml 2>/dev/null || exit 0; fi
