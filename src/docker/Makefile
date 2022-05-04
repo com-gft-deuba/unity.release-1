@@ -7,7 +7,7 @@ TIMESTAMP ?= $(shell date +%Y%m%d%H%M%S)
 GITHASH ?= $(shell (  git rev-parse HEAD  ) )
 _GITHASH := $(shell ( echo "$(GITHASH)" | sed 's/^ *//; s/  *$$//; s/  */\\|/g') )
 
-GO_COMPONENTS :=  ms-measure ms-random fe-measure
+GO_COMPONENTS :=  ms-measure ms-random
 ANGULAR_COMPONENTS := fe-weatherstation
 
 DOCKER_REMOTE ?= europe-west3-docker.pkg.dev/ger-dbagntademo-sdb-001/project
