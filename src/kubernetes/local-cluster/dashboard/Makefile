@@ -44,7 +44,7 @@ $(BUILD_DIR)/$(TARGET)-dashboard: manifests/downloaded/kubernetes-dashboard.yaml
 	@$(MKDIR) "$(BUILD_DIR)"
 	@$(KUBECTL) apply -f manifests/downloaded/kubernetes-dashboard.yaml
 	@$(KUBECTL) apply -f manifests/kubernetes-dashboard-user.yaml
-	@$(KUBECTL) -n kubernetes-dashboard get secret $$(kubectl -n kubernetes-dashboard get sa/admin-user -o jsonpath="{.secrets[0].name}") -o go-template="{{.data.token | base64decode}}" > kubernetes-token.txt
+	@echo $(KUBECTL) -n kubernetes-dashboard get secret $$(kubectl -n kubernetes-dashboard get sa/admin-user -o jsonpath="{.secrets[0].name}") -o go-template="{{.data.token | base64decode}}" > kubernetes-token.txt
 	@echo ; echo -n "TOKEN : " ; $(CAT) kubernetes-token.txt ; echo
 
 

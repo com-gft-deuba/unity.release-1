@@ -45,7 +45,7 @@ $(BUILD_DIR)/istio-$(ISTIO_VERSION)-$(ISTIO_ARCH): downloaded/istio-$(ISTIO_VERS
 	@$(RM) -rf "$(BUILD_DIR)/tmp"
 	@$(RM) -f "$(BUILD_DIR)/istioctl"
 	@$(LN) -s "istioctl-$(ISTIO_VERSION)-$(ISTIO_ARCH)" "$(BUILD_DIR)/istioctl"
-	@"$(BUILD_DIR)/istioctl" install --set profile=demo -y
+	@"$(BUILD_DIR)/istioctl" install --set profile=default -y
 
 ls:
 
