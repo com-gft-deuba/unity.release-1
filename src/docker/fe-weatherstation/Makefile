@@ -72,10 +72,10 @@ docker-clean clean:
 	@while read img imgname ; do \
 	    while read id state name image ; do \
 	        printf 'C %-7s %-10s %-20s %s\n' "$$id" "$$state" "$$name" "$$image" ; \
-	        echo docker container stop --time 5 "$$id" ; \
+	        docker container stop --time 5 "$$id" ; \
 	    done < <( docker container ls --filter "ancestor=$$img" --format='{{.ID}} {{.State}} {{.Names}} {{.Image}}'  | sort ) ; \
 	    echo "I $$img $$imgname" ; \
-	    echo docker image rm -f $$img ; \
+	    docker image rm -f $$img ; \
 	done < <(for v in $(DOCKER_IMAGES) ; do docker image ls --filter "label=PROJECT=$(PROJECT)" --filter "label=COMPONENT=$(COMPONENT)" --filter "label=MODULE=$(MODULE)" --filter "label=CUSTOMER=$(CUSTOMER)" --format='{{.ID}} {{.Repository}}:{{.Tag}}' "$(TARGET):$$v" ; done | sort -k 2) 
 	@for v in $(DOCKER_IMAGES) ; do \
 	    if [ -f "$(DOCKER_DIR)/$(TARGET)-$$v.iid" ] ; then \
