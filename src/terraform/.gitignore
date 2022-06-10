@@ -1,5 +1,0 @@
-*.tfstate
-*.backup
-.terraform
-*.lock.hcl
-*/local-secrets/*

@@ -10,7 +10,7 @@ SUBDIRS = istio kiali dashboard step-1 step-2 step-3
 
 all: istio kiali dashboard docker 
 
-.PHONY: lib bin docker clean distclean dep include kiali certificates istio dashboard
+.PHONY: lib bin docker clean distclean dep include kiali certificates istio dashboard clusterclean clustersetup
 
 lib:
 
@@ -78,6 +78,17 @@ distclean:
 	    PROJECT="$(PROJECT)" \
 		make -C  $$dir distclean ; \
 	done
+
+clusterclean:
+	@kubectl delete namespace "$(PROJECT)" || exit 0
+	@make -C kiali clusterclean
+	@make -C istio clusterclean
+
+clustersetup:
+	@make -C istio clustersetup
+	@make -C kiali clustersetup
+	@cd step-3 && kubectl apply -f .
+
 
 docker-clean:
 

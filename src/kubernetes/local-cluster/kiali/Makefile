@@ -48,7 +48,7 @@ manifests/downloaded/jaeger.yaml:
 	@$(MKDIR) manifests/downloaded/
 	@$(CURL) 'https://raw.githubusercontent.com/istio/istio/release-$(ISTIO_VERSION)/samples/addons/jaeger.yaml' > manifests/downloaded/jaeger.yaml
 
-$(BUILD_DIR)/$(TARGET)-kiali: manifests/downloaded/kiali.yaml \
+clustersetup $(BUILD_DIR)/$(TARGET)-kiali: manifests/downloaded/kiali.yaml \
 	                      manifests/downloaded/prometheus.yaml \
 	                      manifests/downloaded/jaeger.yaml
 	@echo "### KUB / KIALI / DEPLOY / $(PROJECT).$(MODULE).$(COMPONENT)"
@@ -63,7 +63,7 @@ dist:
 
 docker: 
 
-clean:
+clusterclean clean:
 	@echo "### KUB / KIALI / CLEAN - $(PROJECT).$(MODULE).$(COMPONENT)"
 	@if [[ -f "manifests/downloaded/kiali.yaml" ]] ; then kubectl delete -f manifests/downloaded/kiali.yaml 2>/dev/null || exit 0; fi
 	@if [[ -f "manifests/downloaded/prometheus.yaml" ]] ; then kubectl delete -f manifests/downloaded/prometheus.yaml 2>/dev/null || exit 0; fi

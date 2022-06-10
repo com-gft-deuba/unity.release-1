@@ -21,6 +21,6 @@ spec:
     labels:
       version: "1.0.0"
 
-  - name: pre-prod
+  - name: pilot
     labels:
       version: "1.0.0"

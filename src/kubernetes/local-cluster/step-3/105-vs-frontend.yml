@@ -4,7 +4,7 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: frontend-ingress-pre-prod
+  name: frontend-ingress-pilot
   namespace: com-gft-deuba-unity-release-1
   labels:
     PROJECT: com.gft.deuba.unity.release-1
@@ -25,17 +25,17 @@ spec:
 
 # ----------------------------------------------------------------------------
 
-    - name: frontend-pre-prod
+    - name: frontend-pilot
 
       headers:
 
         request:
           set:
-            x-environment: pre-prod
+            x-environment: pilot
 
         response:
           set:
-            x-environment: pre-prod
+            x-environment: pilot
 
       route:
         - destination:

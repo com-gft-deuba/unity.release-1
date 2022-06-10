@@ -15,6 +15,7 @@ GITHASH ?= $(shell (  git rev-parse HEAD  ) )
 _GITHASH := $(shell ( echo "$(GITHASH)" | sed 's/^ *//; s/  *$$//; s/  */\\|/g') )
 
 BUILD_DIR ?= ./build/
+DOWNLOAD_DIR ?= ./downloaded/
 
 CD ?= cd
 CP ?= cp -pv
@@ -24,20 +25,23 @@ LN ?= ln
 RM ?= rm
 TAR ?= tar
 WGET ?= wget
+TOUCH ?= touch
 
-all: istio
+.PHONY: clean istio dist dep lib include distclean bin clusterclean clustersetup
 
-.PHONY: clean istio dist dep lib include distclean bin
+all: istio clustersetup
 
-istio: $(BUILD_DIR)/istio-$(ISTIO_VERSION)-$(ISTIO_ARCH)
+istio: $(BUILD_DIR)/istioctl-$(ISTIO_VERSION)-$(ISTIO_ARCH)
 
-downloaded/istio-$(ISTIO_VERSION)-$(ISTIO_ARCH).tar.gz:
-	@echo "### KUB / ISTIO / DOWN 1 / $(PROJECT).$(MODULE).$(COMPONENT)"
-	@$(MKDIR) -p downloaded/
-	@$(WGET) -O "downloaded/istio-$(ISTIO_VERSION)-$(ISTIO_ARCH).tar.gz" "https://github.com/istio/istio/releases/download/$(ISTIO_VERSION)/istio-$(ISTIO_VERSION)-$(ISTIO_ARCH).tar.gz" 
+$(DOWNLOAD_DIR)/istio-$(ISTIO_VERSION)-$(ISTIO_ARCH).tar.gz:
+	@echo "### KUB / ISTIO / DOWN / $(PROJECT).$(MODULE).$(COMPONENT)"
+	@$(MKDIR) -p "$(DOWNLOAD_DIR)"
+	@$(WGET) -O "$(DOWNLOAD_DIR)/istio-$(ISTIO_VERSION)-$(ISTIO_ARCH).tar.gz" "https://github.com/istio/istio/releases/download/$(ISTIO_VERSION)/istio-$(ISTIO_VERSION)-$(ISTIO_ARCH).tar.gz" 
+	@echo "XXXX 1" 
 
-$(BUILD_DIR)/istio-$(ISTIO_VERSION)-$(ISTIO_ARCH): downloaded/istio-$(ISTIO_VERSION)-$(ISTIO_ARCH).tar.gz
+$(BUILD_DIR)/istioctl-$(ISTIO_VERSION)-$(ISTIO_ARCH): $(DOWNLOAD_DIR)/istio-$(ISTIO_VERSION)-$(ISTIO_ARCH).tar.gz
 	@echo "### KUB / ISTIO / DEPLOY / $(PROJECT).$(MODULE).$(COMPONENT)"
+#	@ls -l "$(BUILD_DIR)/istioctl-$(ISTIO_VERSION)-$(ISTIO_ARCH)"
 	@$(MKDIR) "$(BUILD_DIR)"
 	@$(MKDIR) "$(BUILD_DIR)/tmp"
 	@$(CD) "$(BUILD_DIR)/tmp" && $(TAR) xzvf "../../downloaded/istio-$(ISTIO_VERSION)-$(ISTIO_ARCH).tar.gz" "istio-$(ISTIO_VERSION)/bin/istioctl"
@@ -45,6 +49,10 @@ $(BUILD_DIR)/istio-$(ISTIO_VERSION)-$(ISTIO_ARCH): downloaded/istio-$(ISTIO_VERS
 	@$(RM) -rf "$(BUILD_DIR)/tmp"
 	@$(RM) -f "$(BUILD_DIR)/istioctl"
 	@$(LN) -s "istioctl-$(ISTIO_VERSION)-$(ISTIO_ARCH)" "$(BUILD_DIR)/istioctl"
+	@$(TOUCH) "$(BUILD_DIR)/istioctl-$(ISTIO_VERSION)-$(ISTIO_ARCH)"
+
+clustersetup: 
+	@echo "### KUB / ISTIO / SETUP / $(PROJECT).$(MODULE).$(COMPONENT)"
 	@"$(BUILD_DIR)/istioctl" install --set profile=default -y
 
 ls:
@@ -69,3 +77,7 @@ docker-distclean: docker-clean
 test:
 	
 docker-test:
+
+clusterclean:
+	@istioctl x uninstall --purge -y || exit 0
+	@kubectl delete namespace istio-system || exit 0

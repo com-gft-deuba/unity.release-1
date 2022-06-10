@@ -25,7 +25,7 @@ spec:
 
 # ----------------------------------------------------------------------------
 
-    - name: thermometer-pre-prod
+    - name: thermometer-pilot
 
       match:
 
@@ -41,7 +41,7 @@ spec:
 
         headers:
           x-environment: 
-            exact: pre-prod
+            exact: pilot
 
       rewrite:
         uri: /
@@ -49,16 +49,16 @@ spec:
       headers:
         request:
           set:
-            x-environment: pre-prod
+            x-environment: pilot
 
         response:
           set:
-            x-environment: pre-prod
+            x-environment: pilot
 
       route:
         - destination:
             host: thermometer
-            subset: pre-prod
+            subset: pilot
 
 # ----------------------------------------------------------------------------
 
@@ -120,7 +120,7 @@ spec:
 
 # ----------------------------------------------------------------------------
 
-    - name: thermometer-pre-prod
+    - name: thermometer-pilot
 
       match:
 
@@ -130,7 +130,7 @@ spec:
 
       - headers:
           x-environment: 
-            exact: pre-prod
+            exact: pilot
 
       rewrite:
         uri: /
@@ -138,12 +138,12 @@ spec:
       headers:
         request:
           set:
-            x-environment: pre-prod
+            x-environment: pilot
 
       route:
         - destination:
             host: thermometer
-            subset: pre-prod
+            subset: pilot
 
 # ----------------------------------------------------------------------------
 
