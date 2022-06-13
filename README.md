@@ -9,7 +9,7 @@ The contents is meant to support the actual presentation and is not meant as a h
 
 ### Required software
 
-- A debian installation (i.e. in WSL) other linuxes will probably work too.
+- A debian installation (i.e. in WSL). Other linuxes will probably work too.
 - The 'make' utility.
 - Both the 'docker' and the 'kubectl' commandline tools. Both require correct configuration to access the docker engine and the kubernetes deployment. When running in WSL a docker-desktop installation with activate kubernetes fulfills all requirements.
 - (Optional) to build the Microservices locally, GO at version 1.16 is required.
@@ -38,7 +38,11 @@ Additionally, your '/etc/hosts' file ('%windir%\system32\drivers\etc\hosts' for 
 
 ### Deploy the application
 
-Chdir into one of the 'step-1', 'step-2' or 'step-3' directory and execute 'kctl apply -f .'. 
+The previously execute command 'make clustersetup' already has deployed the application as it is defined in the directory 'src/kubernetes/local-cluster/step-3'. To deploy an other version of the application:
+
+- Chdir into one of the 'step-1', 'step-2' or 'step-3' directory 
+- Execute 'kctl delete -f .' This will remove the applications namespace and should completely remove all of its components
+- Execute 'kctl apply -f .'
 
 ### Start the necessary proxies
 
@@ -63,5 +67,5 @@ Chdir into one of the 'step-1', 'step-2' or 'step-3' directories in 'src/kuberne
 
 ### Cleanup
 
-Chdir into the directory 'src/kubernetes/local-cluster'
+Chdir into the directory 'src/kubernetes/local-cluster' and execute 'make clusterclean'. This will remove both kiali and istio from the kubernetes cluster.
 
