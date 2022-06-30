@@ -31,7 +31,8 @@ jobs:
 
     - name: Build
       shell: bash
-      working-directory:  "./project/src/go/ms-measure"
+      working-directory:  "./project/src/go"
       run: |
         source setup.sh
+        cd ./ms-measure
         make bin
