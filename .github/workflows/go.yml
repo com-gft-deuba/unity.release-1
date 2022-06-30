@@ -26,9 +26,13 @@ jobs:
 
     - name: Set up build environment
       shell: bash
-      run: sudo apt-get install -y make
+      run: |
+        sudo apt-get install -y make
+        ln -s /bin/bash /usr/bin/bash
 
     - name: Build
       shell: bash
       working-directory:  "./project/src/go/ms-measure"
-      run: make all
+      run: |
+        source setup.sh
+        make bin
