@@ -28,7 +28,7 @@ jobs:
       shell: bash
       run: |
         sudo apt-get install -y make
-        ln -s /bin/bash /usr/bin/bash
+        ln -s /usr/bin/bash /bin/bash
 
     - name: Build
       shell: bash
